@@ -12,15 +12,12 @@
 
 SELECT
     COUNT(fc.film_id) AS qty_films,
-    ctg.namE
+    ctg.name
 FROM
     public.film_category fc
-INNER JOIN
-    public.category ctg ON fc.category_id = ctg.category_id
-GROUP BY
-    ctg.name
-ORDER BY
-    qty_films DESC;
+INNER JOIN public.category ctg ON fc.category_id = ctg.category_id
+GROUP BY ctg.name
+ORDER BY qty_films DESC;
 
 /*
 2.
@@ -84,3 +81,17 @@ WHERE i.inventory_id IS NULL;
 Вивести топ 3 актори, які найбільше зʼявлялись в категорії фільмів “Children”.
 */
 -- SQL code goes here...
+
+SELECT
+    COUNT(fa.film_id) qty_films,
+    a.first_name || ' ' || a.last_name AS actor_name
+FROM
+    public.film_actor fa
+INNER JOIN public.actor a ON a.actor_id = fa.actor_id
+INNER JOIN public.film f ON f.film_id = fa.film_id
+INNER JOIN public.film_category fc ON f.film_id = fc.film_id
+INNER JOIN public.category ctg ON fc.category_id = ctg.category_id
+WHERE ctg.name = 'Children'
+GROUP BY a.actor_id
+ORDER BY qty_films DESC
+LIMIT 3;
