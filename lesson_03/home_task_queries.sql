@@ -11,18 +11,16 @@
 -- SQL code goes here...
 
 SELECT
-    COUNT(fc.FILM_ID) AS qty_films,
-    ctg.NAME
+    COUNT(fc.film_id) AS qty_films,
+    ctg.namE
 FROM
-    PUBLIC.FILM_CATEGORY fc
+    public.film_category fc
 INNER JOIN
-    PUBLIC.CATEGORY ctg ON fc.CATEGORY_ID = ctg.CATEGORY_ID
+    public.category ctg ON fc.category_id = ctg.category_id
 GROUP BY
-    ctg.NAME
+    ctg.name
 ORDER BY
     qty_films DESC;
-
-
 
 /*
 2.
@@ -31,17 +29,19 @@ ORDER BY
 */
 -- SQL code goes here...
 
-
 SELECT
-    a.first_name||' '||a.last_name actor_name,
-    COUNT(r.rental_id) total_rentals
-FROM PUBLIC.FILM_ACTOR fa
-INNER JOIN public.actor a on a.actor_id = fa.actor_id
-INNER JOIN public.film f on f.film_id = fa.film_id
-INNER JOIN public.inventory i on i.film_id = f.film_id
-INNER JOIN public.rental r on r.inventory_id = i.inventory_id
-GROUP BY a.actor_id
-ORDER BY 2 DESC
+    a.first_name || ' ' || a.last_name AS actor_name,
+    COUNT(r.rental_id) AS total_rentals
+FROM
+    public.film_actor fa
+INNER JOIN public.actor a ON a.actor_id = fa.actor_id
+INNER JOIN public.film f ON f.film_id = fa.film_id
+INNER JOIN public.inventory i ON i.film_id = f.film_id
+INNER JOIN public.rental r ON r.inventory_id = i.inventory_id
+GROUP BY
+    a.actor_id
+ORDER BY
+    total_rentals DESC
 LIMIT 10;
 
 /*
@@ -51,18 +51,20 @@ LIMIT 10;
 */
 -- SQL code goes here...
 
-select
-    c.name,
-    p.amount
-from film_category fc
-inner join public.category c on fc.category_id = c.category_id
-inner join public.inventory i on fc.film_id = i.film_id
-inner join public.rental r on i.inventory_id = r.inventory_id
-inner join public.payment p on r.rental_id = p.rental_id
-LIMIT 10;
-
-
-
+SELECT
+    c.name AS category_name,
+    SUM(p.amount) AS total_amount
+FROM
+    film_category fc
+INNER JOIN public.category c ON fc.category_id = c.category_id
+INNER JOIN public.inventory i ON fc.film_id = i.film_id
+INNER JOIN public.rental r ON i.inventory_id = r.inventory_id
+INNER JOIN public.payment p ON r.rental_id = p.rental_id
+GROUP BY
+    c.name
+ORDER BY
+    total_amount DESC
+LIMIT 1;
 
 /*
 4.
@@ -71,6 +73,11 @@ LIMIT 10;
 */
 -- SQL code goes here...
 
+SELECT
+    f.title
+FROM film f
+LEFT JOIN public.inventory i on f.film_id = i.film_id
+WHERE i.inventory_id IS NULL;
 
 /*
 5.
