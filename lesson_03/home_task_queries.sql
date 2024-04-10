@@ -32,9 +32,15 @@ ORDER BY
 -- SQL code goes here...
 
 
-
-SELECT *
-FROM PUBLIC.FILM_ACTOR
+SELECT
+    a.first_name||' '||a.last_name actor_name,
+    COUNT(r.rental_id) total_rentals
+FROM PUBLIC.FILM_ACTOR fa
+INNER JOIN public.actor a on a.actor_id = fa.actor_id
+INNER JOIN public.film f on f.film_id = fa.film_id
+INNER JOIN public.inventory i on i.film_id = f.film_id
+INNER JOIN public.rental r on r.inventory_id = i.inventory_id
+GROUP BY a.actor_id
 ORDER BY 2 DESC
 LIMIT 10;
 
