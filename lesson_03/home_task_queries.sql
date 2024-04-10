@@ -46,10 +46,21 @@ LIMIT 10;
 
 /*
 3.
-Вивести категорія фільмів, на яку було витрачено найбільше грошей
+Вивести категорію фільмів, на яку було витрачено найбільше грошей
 в прокаті
 */
 -- SQL code goes here...
+
+select
+    c.name,
+    p.amount
+from film_category fc
+inner join public.category c on fc.category_id = c.category_id
+inner join public.inventory i on fc.film_id = i.film_id
+inner join public.rental r on i.inventory_id = r.inventory_id
+inner join public.payment p on r.rental_id = p.rental_id
+LIMIT 10;
+
 
 
 
