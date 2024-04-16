@@ -31,7 +31,7 @@ def convert_json_to_avro(json_file_path: str, avro_file_path: str, schema: dict)
     with open(avro_file_path, 'wb') as out:
         writer(out, parsed_schema, data)
 
-@app.route('/convert-to-avro', methods=['POST'])
+@app.route('/', methods=['POST'])
 def convert_to_avro_route():
     content = request.json
     raw_dir = content['raw_dir']
@@ -51,7 +51,7 @@ def convert_to_avro_route():
                 avro_file_path = os.path.join(avro_subdir, avro_filename)
                 convert_json_to_avro(json_file_path, avro_file_path, schema)
 
-    return jsonify({"status": "success", "message": "Data converted to Avro format successfully."})
+    return jsonify({"status": "success", "message": "Data converted to Avro format successfully."}), 201
 
 if __name__ == '__main__':
     app.run(port=8082)

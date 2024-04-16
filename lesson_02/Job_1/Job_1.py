@@ -40,7 +40,7 @@ def fetch_and_save_sales_data(date: str, raw_dir: str) -> None:
 
 
 # Type hint for a view function that returns a Flask Response object
-@app.route('/fetch-sales', methods=['POST'])
+@app.route('/', methods=['POST'])
 def fetch_sales() -> Any:
     data: Dict[str, str] = request.json
     date: str = data.get('date')
@@ -50,7 +50,7 @@ def fetch_sales() -> Any:
     clean_directory(directory_path)
     fetch_and_save_sales_data(date, directory_path)
 
-    return jsonify({"status": "success", "message": "Data fetched and saved successfully."}), 200
+    return jsonify({"status": "success", "message": "Data fetched and saved successfully."}), 201
 
 
 if __name__ == '__main__':
