@@ -1,22 +1,23 @@
 from flask import Flask, request, jsonify
+from typing import Dict, Any
 import requests
 import os
 import shutil
 
 app = Flask(__name__)
 
-AUTH_TOKEN = os.environ['AUTH_TOKEN']
+AUTH_TOKEN = os.environ.get('AUTH_TOKEN', 'your-default-token')
 
 
-# Функція для очищення директорії
-def clean_directory(path):
+# Type hint for a function that accepts a string and returns None
+def clean_directory(path: str) -> None:
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
 
 
-# Функція для зберігання даних з API
-def fetch_and_save_sales_data(date, raw_dir):
+# Type hint for a function that accepts strings for date and directory path, and returns None
+def fetch_and_save_sales_data(date: str, raw_dir: str) -> None:
     page = 1
     while True:
         response = requests.get(
@@ -28,30 +29,25 @@ def fetch_and_save_sales_data(date, raw_dir):
         if response.status_code != 200 or not response.json():
             break  # Stop if there's an error or no more data
 
-        # Шлях і ім'я файлу
-        file_name = f'sales_{date}_{page}.json' if page > 1 else f'sales_{date}.json'
+        # File path construction with type hint for the file_name variable
+        file_name: str = f'sales_{date}_{page}.json' if page > 1 else f'sales_{date}.json'
         file_path = os.path.join(raw_dir, file_name)
 
-        # Запис даних в файл
+        # Writing data to file
         with open(file_path, 'w') as file:
             file.write(response.text)
         page += 1
 
 
-# Маршрут для POST-запиту
+# Type hint for a view function that returns a Flask Response object
 @app.route('/fetch-sales', methods=['POST'])
-def fetch_sales():
-    data = request.json
-    date = data.get('date')
-    raw_dir = data.get('raw_dir')
+def fetch_sales() -> Any:
+    data: Dict[str, str] = request.json
+    date: str = data.get('date')
+    raw_dir: str = data.get('raw_dir')
 
-    # Шлях до директорії
-    directory_path = os.path.join(raw_dir, 'sales', date)
-
-    # Очищення директорії перед записом нових файлів
+    directory_path: str = os.path.join(raw_dir, 'sales', date)
     clean_directory(directory_path)
-
-    # Виклик функції для витягування даних
     fetch_and_save_sales_data(date, directory_path)
 
     return jsonify({"status": "success", "message": "Data fetched and saved successfully."}), 200
